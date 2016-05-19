@@ -1,6 +1,10 @@
 package datastore;
 
 import java.sql.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 public class DatabaseConnection {
     
@@ -18,10 +22,18 @@ public class DatabaseConnection {
         boolean result = false;
         if(connection == null)
         {
+            Properties prop = new Properties();
+            InputStream input = null;
+        
             try
             {   
+                input = new FileInputStream("config.properties");
+
+		// load a properties file
+		prop.load(input);
+                
                 connection = DriverManager.getConnection(
-                    "jdbc:mysql://nassaustunt2016.nl/martkic145_stunt" , "martkic145", "4xjsm3w4");
+                    "jdbc:mysql://" + prop.getProperty("ip") + "/" + prop.getProperty("dbname") , prop.getProperty("dbuser"), prop.getProperty("dbpassword"));
 
                 if(connection != null)
                 {
@@ -35,6 +47,18 @@ public class DatabaseConnection {
             {
                 System.out.println(e);
                 result = false;
+            }
+            catch (IOException ex) {
+		ex.printStackTrace();
+            } 
+            finally {
+		if (input != null) {
+			try {
+				input.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
             }
         }
         else
