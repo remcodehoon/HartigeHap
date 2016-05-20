@@ -5,11 +5,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DatabaseConnection {
 
     private Connection connection;
     private Statement statement;
+    private static final Logger log = Logger.getLogger(DatabaseConnection.class.getName());
 
     public DatabaseConnection() {
         connection = null;
@@ -36,17 +39,16 @@ public class DatabaseConnection {
                 } else {
                     result = true;
                 }
-            } catch (SQLException e) {
-                System.out.println(e);
+            } catch (SQLException | IOException e) {
+                log.log( Level.SEVERE, e.toString(), e);
                 result = false;
-            } catch (IOException ex) {
-                ex.printStackTrace();
             } finally {
                 if (input != null) {
                     try {
                         input.close();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        log.log( Level.SEVERE, e.toString(), e);
+                        result = false;
                     }
                 }
             }
